@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 import rospy
-import rospack
+import rospkg
+from rospy_message_converter import message_converter
 import time
+import yaml
+import os
 from geometry_msgs.msg import Pose
 from get_model_gazebo_pose import GazeboModel
 
 class ModelPoseStore():
     def __init__(self, model_to_track_list):
-        
-        
-        
+
         # This are the models that we will generate information about.
-        self.model_to_track_name = "demo_spam1"
-        self.table_to_track_name = "demo_table1"
-        
-        model_to_track_list = [self.model_to_track_name, self.table_to_track_name]
         self.gz_model_obj = GazeboModel(model_to_track_list)
         
         
@@ -34,11 +31,42 @@ class ModelPoseStore():
         
         
         
+        rate = rospy.Rate(1.0)
+        
+        with open(file_to_store, 'w') as outfile:
+            
+            for i in range(10):
+                now_pose = self.get_pose_of_model(model_name)
+                now_dict = self.reformat_pose_to_dict(now_pose)
+    
+                rospy.logdebug(str(now_dict))
+                rospy.logdebug(str(type(now_dict)))
+                
+                yaml.dump(now_dict, outfile, default_flow_style=False)
+                
+                rate.sleep()
+        
+ 
+        
+        
+    def reformat_pose_to_dict(self, pose):
+        """
+        Converts Pose to dict
+        """
+        
+        dictionary = message_converter.convert_ros_message_to_dictionary(pose)
+        
+        now_time_stamp = rospy.get_time()
+        
+        stamp_dict = {str(now_time_stamp):dictionary}
+        
+        return stamp_dict
+        
     
     
 
 if __name__ == '__main__':
-    rospy.init_node('store_model_poses_node', anonymous=True, log_level=rospy.WARN)
+    rospy.init_node('store_model_poses_node', anonymous=True, log_level=rospy.DEBUG)
     
     model_to_save_poses = "custom_ground_plane_box"
     model_to_track_list = [model_to_save_poses]
