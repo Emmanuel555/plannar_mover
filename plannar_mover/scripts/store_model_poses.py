@@ -23,7 +23,7 @@ class ModelPoseStore():
         
         return pose_now
         
-    def store_model_poses_for_duration(self, model_name, duration=1.0, file_to_store="poses.yaml"):
+    def store_model_poses_for_duration(self, model_name, duration=1.0, frequency_save_pose=1.0, file_to_store="poses.yaml"):
         """
         We store in the Given File Name the poses of the given model, whihc has to be inside the init model list
         inside a Yaml file
@@ -31,20 +31,28 @@ class ModelPoseStore():
         
         
         
-        rate = rospy.Rate(1.0)
+        rate = rospy.Rate(frequency_save_pose)
+        
+        init_time_stamp = rospy.get_time()
+        now_time_stamp = rospy.get_time()
+        delta_time = now_time_stamp - init_time_stamp
         
         with open(file_to_store, 'w') as outfile:
             
-            for i in range(10):
+            while delta_time <= duration:
                 now_pose = self.get_pose_of_model(model_name)
                 now_dict = self.reformat_pose_to_dict(now_pose)
     
                 rospy.logdebug(str(now_dict))
-                rospy.logdebug(str(type(now_dict)))
                 
                 yaml.dump(now_dict, outfile, default_flow_style=False)
                 
                 rate.sleep()
+                
+                now_time_stamp = rospy.get_time()
+                delta_time = now_time_stamp - init_time_stamp
+                
+                rospy.logdebug("TIME SAVING==>"+str(delta_time))
         
  
         
@@ -87,5 +95,6 @@ if __name__ == '__main__':
     
     
     model_pose_store_obj.store_model_poses_for_duration(    model_name=model_to_track_list[0],
-                                                            duration=1.0,
+                                                            duration=10.0,
+                                                            frequency_save_pose=5.0,
                                                             file_to_store=pose_file_path)
