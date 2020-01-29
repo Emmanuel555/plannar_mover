@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <sdf version="1.5">
   <model name="gurdy">
-    <!--
+
     <link name="base_link">
       <pose>0 0 0 0 0 0</pose>
       <inertial>
@@ -44,9 +44,6 @@
         </geometry>
       </visual>
     </link>
-
-
-
 
     <link name="lowerleg1_link">
       <pose>0 0 0 0 0 0</pose>
@@ -91,7 +88,6 @@
         </geometry>
       </visual>
     </link>
-
 
     <link name="upperleg1_link">
       <pose>0 0 0 0 0 0</pose>

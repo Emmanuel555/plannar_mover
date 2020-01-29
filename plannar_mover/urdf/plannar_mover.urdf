@@ -1,7 +1,10 @@
 <robot name="gurdy">
 
     <gazebo>
+	<static>false</static>
         <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+	  <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+          <legacyModeNS>true</legacyModeNS>
         </plugin>
     </gazebo>
 	<!-- * * * Link Definitions * * * -->
@@ -10,20 +13,20 @@
 
     <link name="x_axis_link">
  	    <inertial>
-            <origin rpy="0.0 0 0" xyz="0 0 0"/>
-            <mass value="0.01" />
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="1.0" />
             <inertia ixx="7.58333333333e-07" ixy="0.0" ixz="0.0" iyy="7.58333333333e-07" iyz="0.0" izz="1.25e-06"/>
         </inertial>
         <collision>
-            <origin rpy="0.0 0 0" xyz="0 0 0"/>
+            <origin rpy="0 0 0" xyz="0.0 0 0"/>
             <geometry>
-                <box size="1.0 1.0 0.01"/>
+                <box size="1.0 1.0 0.05"/>
             </geometry>
         </collision>
         <visual>
-            <origin rpy="0.0 0 0" xyz="0 0 0"/>
+            <origin rpy="0 0 0" xyz="0.0 0 0"/>
             <geometry>
-                <box size="1.0 1.0 0.01"/>
+                <box size="1.0 1.0 0.05"/>
             </geometry>
         </visual>
 	</link>
@@ -35,7 +38,7 @@
     </gazebo>
 
     <joint name="x_axis_joint" type="prismatic">
-        <origin xyz="0 0 0.01" rpy="0.0 0.0 0.0"/>
+        <origin xyz="0 0 0.05" rpy="0.0 0.0 0.0"/>
         <parent link="world" />
         <child link="x_axis_link" />
         <axis xyz="1 0 0" />
@@ -53,8 +56,9 @@
             <hardwareInterface>EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
-    </transmission>
+    </transmission> 
 
+<!--
     <link name="y_axis_link">
  	    <inertial>
             <origin rpy="0.0 0 0" xyz="0 0 0"/>
@@ -88,7 +92,7 @@
         <child link="y_axis_link" />
         <axis xyz="0 1 0" />
         <limit effort="10000" lower="-5.0" upper="5.0" velocity="1" />
-        <!--<dynamics damping="100.0" />-->
+        <!--<dynamics damping="100.0" />->
     </joint>
 
 
@@ -101,8 +105,7 @@
             <hardwareInterface>EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
-    </transmission>
-
+    </transmission>-->
 
     <link name="entity_link">
  	    <inertial>
@@ -114,7 +117,8 @@
         <visual>
             <origin rpy="0.0 0 0" xyz="0 0 0"/>
             <geometry>
-                <box size="0.05 0.05 0.05"/>
+             <cylinder radius = "0.1"
+              length = "0.1"/>
             </geometry>
         </visual>
 	</link>
@@ -126,10 +130,60 @@
     </gazebo>
 
     <joint name="entity_link_joint" type="fixed">
-        <parent link="y_axis_link"/>
+        <parent link="x_axis_link"/>
         <child link="entity_link"/>
         <origin xyz="0 0 0.025" rpy="0 0 0"/>
     </joint>
+
+
+    <link name="z_axis_link">
+ 	    <inertial>
+            <origin rpy="0.0 0 0" xyz="0 0 0"/>
+            <mass value="0.1" />
+            <inertia ixx="4.16666666667e-05" ixy="0.0" ixz="0.0" iyy="4.16666666667e-05" iyz="0.0" izz="4.16666666667e-05"/>
+        </inertial>
+
+	<collision>
+            <origin rpy="0.0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <box size="0.05 0.05 0.05"/>
+            </geometry>
+        </collision>
+
+        <visual>
+            <origin rpy="0.0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <box size="0.05 0.05 0.05"/>
+            </geometry>
+        </visual>
+	</link>
+
+    <gazebo reference="z_axis_link">
+        <mu1>10.0</mu1>
+        <mu2>10.0</mu2>
+        <material>Gazebo/Green</material>
+    </gazebo>
+
+    <joint name="z_axis_joint" type="revolute">
+        <origin xyz="0 0 0.06" rpy="0.0 0.0 0.0"/>
+        <parent link="entity_link" />
+        <child link="z_axis_link" />
+        <axis xyz="0 0 1" />
+        <limit effort="10000" lower="-5.0" upper="5.0" velocity="1" />
+    <!--    <dynamics damping="100.0" /> -->
+    </joint>
+
+    <transmission name="tran3">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="z_axis_joint">
+            <hardwareInterface>EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="motor3">
+            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission> 
+
 
 
 
